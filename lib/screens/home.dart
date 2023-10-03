@@ -9,22 +9,40 @@ class Home extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: _buildAppBar(),
-      body: _buildContainer(),
+      body: _buildBody(),
     );
   }
 
-  Container _buildContainer(){
+  Widget _buildBody() {
     return Container(
+      padding: EdgeInsets.symmetric(horizontal: 15),
       child: Column(
-        children: [
-          Container(
-            decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(20)),
-            child: TextField(),
-          )
-        ],
+        children: [SearchInput()],
       ),
     );
   }
+
+  Widget SearchInput() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 15),
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(20)),
+      child: const TextField(
+        decoration: InputDecoration(
+            contentPadding: EdgeInsets.all(0),
+            prefixIcon: Icon(
+              Icons.search,
+              color: Colors.black,
+              size: 20,
+            ),
+            prefixIconConstraints: BoxConstraints(maxHeight: 20, maxWidth: 25),
+            border: InputBorder.none,
+            hintText: "Search",
+            hintStyle: TextStyle(color: grey)),
+      ),
+    );
+  }
+
   AppBar _buildAppBar() {
     return AppBar(
       elevation: 0,
@@ -37,6 +55,7 @@ class Home extends StatelessWidget {
             height: 40,
             width: 40,
             child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
               child: Image.asset("assets/images/profile_images_for_test.jpg"),
             ),
           )
