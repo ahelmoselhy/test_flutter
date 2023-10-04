@@ -1,8 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:test_flutter/colors/color.dart';
+import 'package:test_flutter/model/todo.dart';
+import 'package:test_flutter/widgets/todo_item.dart';
+import '../colors/color.dart';
 
-class Home extends StatelessWidget {
-  const Home({super.key});
+class Home extends StatefulWidget {
+  Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  final todoList = ToDo.todoList();
+  List<ToDo> filteredList = [];
+  final _textController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    filteredList = todoList;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,32 +30,146 @@ class Home extends StatelessWidget {
     );
   }
 
+  void _handleTodoChange(ToDo toDo) {
+    setState(() {
+      toDo.isDone = !toDo.isDone;
+    });
+  }
+
+  void _addNewToDo(String toDoText) {
+    setState(() {
+      todoList.add(ToDo(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          todoText: toDoText));
+    });
+    _textController.clear();
+  }
+
+  void _handleTodoDelete(String toDoId) {
+    setState(() {
+      todoList.removeWhere((todoItem) => todoItem.id == toDoId);
+    });
+  }
+
+  void _handleSearch(String searchKey) {
+    List<ToDo> results = [];
+    if (searchKey.isEmpty) {
+      results = todoList;
+    } else {
+      results = todoList
+          .where((todo) =>
+              todo.todoText!.toLowerCase().contains(searchKey.toLowerCase()))
+          .toList();
+    }
+    setState(() {
+      filteredList = results;
+    });
+  }
+
   Widget _buildBody() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 15),
-      child: Column(
-        children: [SearchInput()],
-      ),
+    return Stack(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          child: Column(
+            children: [
+              SearchInput(),
+              Expanded(
+                child: ListView(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 50, bottom: 20),
+                      child: const Text(
+                        'All ToDos',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500, fontSize: 30),
+                      ),
+                    ),
+                    for (ToDo toDo in filteredList)
+                      ToDoItem(
+                        toDo: toDo,
+                        onToDoChanged: _handleTodoChange,
+                        onToDoDeleted: _handleTodoDelete,
+                      ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  margin:
+                      const EdgeInsets.only(right: 20, left: 20, bottom: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: const [
+                      BoxShadow(
+                          color: grey,
+                          offset: Offset(0.0, 0.0),
+                          blurRadius: 10.0,
+                          spreadRadius: 10.0),
+                    ],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: TextField(
+                    controller: _textController,
+                    decoration: const InputDecoration(
+                        hintText: "Add a new to do", border: InputBorder.none),
+                  ),
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(bottom: 20, right: 20),
+                child: ElevatedButton(
+                  onPressed: () {
+                    _addNewToDo(_textController.text);
+                  },
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: blue,
+                      minimumSize: const Size(60, 60),
+                      elevation: 10),
+                  child: const Text(
+                    '+',
+                    style: TextStyle(fontSize: 40),
+                  ),
+                ),
+              )
+            ],
+          ),
+        )
+      ],
     );
   }
 
   Widget SearchInput() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 15),
+      alignment: Alignment.center,
+      padding: const EdgeInsets.symmetric(horizontal: 15),
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(20)),
-      child: const TextField(
-        decoration: InputDecoration(
-            contentPadding: EdgeInsets.all(0),
-            prefixIcon: Icon(
-              Icons.search,
-              color: Colors.black,
-              size: 20,
-            ),
-            prefixIconConstraints: BoxConstraints(maxHeight: 20, maxWidth: 25),
-            border: InputBorder.none,
-            hintText: "Search",
-            hintStyle: TextStyle(color: grey)),
+      child: TextField(
+        onChanged: (value) {
+          _handleSearch(value);
+        },
+        decoration: const InputDecoration(
+          contentPadding: EdgeInsets.all(10),
+          prefixIcon: Icon(
+            Icons.search,
+            color: Colors.black,
+            size: 20,
+          ),
+          prefixIconConstraints: BoxConstraints(maxHeight: 20, maxWidth: 25),
+          border: InputBorder.none,
+          hintText: "Search",
+          hintStyle: TextStyle(color: grey),
+        ),
       ),
     );
   }
