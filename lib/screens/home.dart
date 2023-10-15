@@ -10,6 +10,48 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
+var name = 'ahmed';
+var age = 15;
+var array = ['a', 'b'];
+var map = {
+  'name': ['ahmed'],
+  'age': [20, 23]
+};
+
+String getMyName(String name,{String? aa}) {
+  return name;  
+}
+bool isHamada(String name){
+  return name == 'Hamada';
+}
+
+isAhmed(String name) => name == 'ahmed';
+
+void testFunctionParameter(String name,{int? age,required int? height}){
+
+}
+
+void testFun() {
+  if (name == 'ahmed') {
+  } else if (age >= 20) {
+  } else {}
+  switch (age) {
+    case 20:
+      break;
+    case 30:
+      break;
+  }
+
+  isAhmed('ahmed');
+
+  for (final c in array) {}
+  while (age > 5) {
+    age--;
+  }
+
+  array.where((name) => name.contains('a')).forEach(print);
+}
+
 class _HomeState extends State<Home> {
   final todoList = ToDo.todoList();
   List<ToDo> filteredList = [];
@@ -73,7 +115,7 @@ class _HomeState extends State<Home> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
           child: Column(
             children: [
-              SearchInput(),
+              searchInput(),
               Expanded(
                 child: ListView(
                   children: [
@@ -148,7 +190,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget SearchInput() {
+  Widget searchInput() {
     return Container(
       alignment: Alignment.center,
       padding: const EdgeInsets.symmetric(horizontal: 15),
